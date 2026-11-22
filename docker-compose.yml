@@ -11,3 +11,11 @@ services:
       - MQTT__HOST=host.docker.internal
       - MQTT__USERNAME=mubarak
       - MQTT__PASSWORD=mubarak123
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5' # Max out at x% of a single CPU core
+          memory: 256M # Max out at x Megabytes of RAM
+        reservations:
+          cpus: '0.30' # Guarantee at least x% of a CPU core
+          memory: 164M # Guarantee at least x Megabytes of RAM

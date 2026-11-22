@@ -18,5 +18,12 @@ ENV ASPNETCORE_HTTP_PORTS=8081
 EXPOSE 8081
 
 COPY --from=build /app/publish .
+
+# Force Workstation GC to minimize container RAM footprint
+ENV DOTNET_gcServer=0
+
+# Limit the .NET GC Heap to 80% of the Docker container's allocated memory limit
+ENV DOTNET_GCHeapHardLimitPercent=80
+
 USER $APP_UID
 ENTRYPOINT ["dotnet", "API.dll"]
