@@ -1,12 +1,11 @@
 using Common.Dto;
 using Common.Mapper;
 using DataAccess.Common.Interface;
-using Microsoft.Extensions.Logging;
 using Service.Interface;
 
 namespace Service.Implementation;
 
-public sealed class UserService(IUserRepository userRepository, ILogger<UserService> logger) : IUserService
+public sealed class UserService(IUserRepository userRepository) : IUserService
 {
     public async Task<IReadOnlyList<UserDto?>> GetAllUsersAsync(CancellationToken cancellationToken)
     {
