@@ -28,7 +28,7 @@ internal static class ServiceCollectionExtensions
     {
         var clientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENT_ID") ??
                        throw new ArgumentException("GOOGLE__CLIENT_ID environment variable not set");
-        
+
         var apiTokens = new ApiAccessTokens(
             configuration["Authentication:Jwt:Issuer"],
             configuration["Authentication:Jwt:Audience"],
@@ -39,9 +39,12 @@ internal static class ServiceCollectionExtensions
 
         FluentMapper.Initialize(config =>
         {
-            // config.UseNamingPolicy(NamingPolicy.SnakeCase, caseSensitive: false).ForEntity<UserEntity>();s
             config.UseNamingPolicy(NamingPolicy.SnakeCase, caseSensitive: false)
-                .ForEntitiesInAssembly(Assembly.GetAssembly(typeof(DeviceEntity))!);
+            .ForEntity<UserEntity>()
+            .ForEntity<DeviceEntity>()
+            ;
+            // config.UseNamingPolicy(NamingPolicy.SnakeCase, caseSensitive: false)
+            //     .ForEntitiesInAssembly(Assembly.GetAssembly(typeof(DeviceEntity))!);
         });
         FluentMapper.Validate();
 
@@ -72,7 +75,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IMqttMessageHandler, TemperatureHandler>();
         services.AddScoped<IMqttMessageHandler, TelemetryHandler>();
         services.AddScoped<IUserService, UserService>();
-        
+
         services.AddProblemDetails();
 
         services.AddCors(options => options.AddDefaultPolicy(policy => policy
