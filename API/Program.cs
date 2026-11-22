@@ -18,6 +18,8 @@ try
     app.UseAuthorization();
 
     app.MapAuthenticationEndpoints();
+    app.MapMqttBrokerEndpoints();
+    
     await app.RunAsync();
 }
 catch (Exception ex)

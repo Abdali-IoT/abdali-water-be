@@ -11,6 +11,7 @@ using DataAccess.Common.Interface;
 using DataAcess.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using MQTTnet;
 using Npgsql;
 using Serilog;
 using Service.Authentication;
@@ -60,7 +61,9 @@ internal static class ServiceCollectionExtensions
 
         services.AddSingleton(new GoogleCredentialVerifier(clientId));
         services.AddSingleton(apiTokens);
+        services.AddSingleton<IMqttClient>(_ => new MqttClientFactory().CreateMqttClient());
         services.AddSingleton<MqttMessageDispatcher>();
+        services.AddSingleton<MqttPublisher>();
         services.AddHostedService<MqttBackgroundService>();
         services.AddScoped<IAuthorizationHandler, EnabledUserAuthorizationHandler>();
         services.AddExceptionHandler<AuthenticationDependencyExceptionHandler>();

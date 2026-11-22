@@ -8,7 +8,9 @@ public sealed class MqttBackgroundService(
     ILogger<MqttBackgroundService> logger,
     IConfiguration configuration,
     IServiceScopeFactory scopeFactory,
-    MqttMessageDispatcher dispatcher
+    MqttMessageDispatcher dispatcher,
+    IMqttClient client,
+    MqttPublisher publisher
     )
     : BackgroundService
 {
@@ -17,9 +19,6 @@ public sealed class MqttBackgroundService(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new MqttClientFactory();
-        using var client = factory.CreateMqttClient();
-
         var host = Environment.GetEnvironmentVariable("MQTT__HOST") ?? throw new ArgumentException("Mqtt:Host is missing.");
         var port = int.Parse(Environment.GetEnvironmentVariable("MQTT__PORT") ?? "1883");
 
@@ -76,7 +75,7 @@ public sealed class MqttBackgroundService(
             {
                 if (!client.IsConnected)
                 {
-                    // subscribed = false;
+                    await publisher.PauseAsync();
                     logger.LogInformation("Connecting to MQTT broker {Host}:{Port}", host, port);
 
                     // Avoid hanging indefinitely during connection.
@@ -86,8 +85,9 @@ public sealed class MqttBackgroundService(
                     if (!client.IsConnected)
                         throw new InvalidOperationException($"MQTT connection refused: {result.ResultCode}");
 
+                    publisher.Resume();
                     logger.LogInformation("MQTT connected");
-                    var builder = factory.CreateSubscribeOptionsBuilder();
+                    var builder = new MqttClientSubscribeOptionsBuilder();
 
                     foreach (var topic in topics)
                     {
@@ -116,6 +116,7 @@ public sealed class MqttBackgroundService(
 
                 // Force a new connection and resubscription
                 // if subscribing failed after connecting.
+                await publisher.PauseAsync();
                 if (client.IsConnected)
                 {
                     try
@@ -140,6 +141,7 @@ public sealed class MqttBackgroundService(
         }
 
         // Graceful shutdown.
+        await publisher.PauseAsync();
         if (client.IsConnected)
         {
             try
