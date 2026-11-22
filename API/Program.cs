@@ -1,8 +1,6 @@
-using API.Handlers;
-using API.MQTT;
-using API.Schedular;
+using API.Configuration;
+using API.Endpoints;
 using Serilog;
-using Serilog.Formatting.Compact;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -10,19 +8,16 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    builder.Services.AddSerilog((services, log) =>
-    {
-        log
-            .Enrich.FromLogContext()
-            .WriteTo.Console();
-    });
-
-    builder.Services.AddScoped<IMqttMessageHandler, TemperatureHandler>();
-    
-    builder.Services.AddSingleton<MqttMessageDispatcher>();
-    builder.Services.AddHostedService<MqttBackgroundService>();
+    builder.Services.AddApplicationServices(builder.Configuration);
 
     var app = builder.Build();
+    app.UseExceptionHandler();
+    app.UseHttpsRedirection();
+    app.UseCors();
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapAuthenticationEndpoints();
     await app.RunAsync();
 }
 catch (Exception ex)
@@ -31,5 +26,5 @@ catch (Exception ex)
 }
 finally
 {
-    await Log.CloseAndFlushAsync();    
+    await Log.CloseAndFlushAsync();
 }

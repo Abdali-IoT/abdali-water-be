@@ -41,7 +41,7 @@ public sealed class MqttBackgroundService(
             .WithClientId(clientId)
             .WithCredentials(username, password)
             .WithCleanStart()
-            .WithKeepAlivePeriod(TimeSpan.FromSeconds(20))
+            // .WithKeepAlivePeriod(TimeSpan.FromSeconds(20))
             .Build();
 
         // Handle incoming messages.
