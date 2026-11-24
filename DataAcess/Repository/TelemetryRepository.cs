@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using DataAccess.Common.Interface;
 
 namespace DataAcess.Repository;
 
