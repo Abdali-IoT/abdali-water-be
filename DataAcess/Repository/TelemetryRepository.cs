@@ -1,7 +1,5 @@
 using System.Data;
 using Dapper;
-using DataAccess.Common.Entity;
-using DataAccess.Common.Interface;
 
 namespace DataAcess.Repository;
 
@@ -10,16 +8,23 @@ public class TelemetryRepository(Func<IDbConnection> connectionFactory) : ITelem
     public async Task IngestTelemetryAsync(string payload, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         string sql = """
-                     SELECT
-                        status,
-                        stored_message_id,
-                        inserted_readings
-                     FROM ingest_telemetry(@payload);
+                     SELECT *
+                     FROM public.ingest_telemetry(@Payload::jsonb);
                      """;
 
         using var connection = connectionFactory();
-        await connection.QueryFirstOrDefaultAsync(sql, new { payload });
+
+        var parameters = new DynamicParameters();
+        parameters.Add("Payload", payload, DbType.String);
+
+        var command = new CommandDefinition(
+            commandText: sql,
+            parameters: parameters,
+            commandType: CommandType.Text,
+            cancellationToken: cancellationToken);
+
+        await connection.QuerySingleAsync(command);
     }
 }
