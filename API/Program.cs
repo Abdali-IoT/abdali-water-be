@@ -23,6 +23,7 @@ try
 
     app.MapAuthenticationEndpoints();
     app.MapMqttBrokerEndpoints();
+    app.MapReportEndpoints();
     
     await app.RunAsync();
 }
