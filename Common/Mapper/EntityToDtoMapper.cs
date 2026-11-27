@@ -15,7 +15,7 @@ public static class EntityToDtoMapper
 
 
     public static DeviceDto ToDto(this DeviceEntity entity) =>
-        new DeviceDto(entity.Id, entity.HardwareId, entity.Name,
+        new DeviceDto(entity.Id, entity.HardwareId, entity.Name, entity.DeviceType.ToString(),
             entity.FirmwareVersion!, entity.LastSeenAt, entity.CreatedAt);
 
     public static UserDto? ToDto(this UserEntity? entity) => entity is null

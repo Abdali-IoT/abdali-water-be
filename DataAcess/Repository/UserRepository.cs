@@ -68,7 +68,8 @@ public sealed class UserRepository(Func<IDbConnection> connectionFactory, ILogge
         cancellationToken.ThrowIfCancellationRequested();
 
         const string sql = """
-                           SELECT id, name, email, created_at, google_subject, google_sign_in_enabled
+                           SELECT id, name, email, created_at, google_subject, 
+                                  google_sign_in_enabled
                            FROM users
                            WHERE google_subject = @subject
                            """;
@@ -84,7 +85,9 @@ public sealed class UserRepository(Func<IDbConnection> connectionFactory, ILogge
 
         const string sql = """
                            SELECT u.id, u.name, u.email, u.created_at, u.google_subject, u.google_sign_in_enabled, 
-                                  d.id as DeviceId, d.id, d.hardware_id, d.name, d.firmware_version, d.last_seen_at, d.created_at
+                                  d.id as DeviceId, d.id, d.hardware_id, d.name, d.firmware_version,
+                                  replace(d.device_type::text, '_', '') AS device_type,
+                                  d.last_seen_at, d.created_at
                            FROM users u
                            left join user_devices ud on u.id = ud.user_id
                            left join devices d on d.id = ud.device_id 

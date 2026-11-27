@@ -39,12 +39,12 @@ internal static class ServiceCollectionExtensions
 
         FluentMapper.Initialize(config =>
         {
-            config.UseNamingPolicy(NamingPolicy.SnakeCase, caseSensitive: false)
-            .ForEntity<UserEntity>()
-            .ForEntity<DeviceEntity>()
-            ;
             // config.UseNamingPolicy(NamingPolicy.SnakeCase, caseSensitive: false)
-            //     .ForEntitiesInAssembly(Assembly.GetAssembly(typeof(DeviceEntity))!);
+            // .ForEntity<UserEntity>()
+            // .ForEntity<DeviceEntity>()
+            // ;
+            config.UseNamingPolicy(NamingPolicy.SnakeCase, caseSensitive: false)
+                .ForEntitiesInAssembly(Assembly.GetAssembly(typeof(DeviceEntity))!);
         });
         FluentMapper.Validate();
 
@@ -75,6 +75,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IMqttMessageHandler, TemperatureHandler>();
         services.AddScoped<IMqttMessageHandler, TelemetryHandler>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITelemetryRepository, TelemetryRepository>();
+        services.AddScoped<ITelemetryService, TelemetryService>();
 
         services.AddProblemDetails();
 
