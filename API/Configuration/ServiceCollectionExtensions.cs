@@ -77,6 +77,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITelemetryRepository, TelemetryRepository>();
         services.AddScoped<ITelemetryService, TelemetryService>();
+        services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<IReportService, ReportService>();
 
         services.AddProblemDetails();
 
