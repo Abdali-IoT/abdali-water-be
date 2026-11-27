@@ -1,5 +1,8 @@
 using API.Configuration;
 using API.Endpoints;
+using Dapper;
+using DataAccess.Common.Enum;
+using DataAccess.Common.Handler;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -7,6 +10,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 try
 {
+    SqlMapper.AddTypeHandler(new StringEnumHandler<DeviceTypeEnum>());
     var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddApplicationServices(builder.Configuration);
 
